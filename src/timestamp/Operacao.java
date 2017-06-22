@@ -12,15 +12,21 @@ package timestamp;
 public class Operacao {
     
     private TipoOperacao tipo;
+    private char dado;
     private int valor;
 
-    public Operacao(TipoOperacao tipo, int valor) {
+    public Operacao(TipoOperacao tipo, char dado, int valor) {
         this.tipo = tipo;
+        this.dado = dado;
         this.valor = valor;
     }
 
     public TipoOperacao getTipo() {
         return tipo;
+    }
+
+    public char getDado() {
+        return dado;
     }
 
     public int getValor() {
