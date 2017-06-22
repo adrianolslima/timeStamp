@@ -15,10 +15,8 @@ public class Operacao {
     private char dado;
     private int valor;
 
-    public Operacao(TipoOperacao tipo, char dado, int valor) {
+    public Operacao(TipoOperacao tipo) {
         this.tipo = tipo;
-        this.dado = dado;
-        this.valor = valor;
     }
 
     public TipoOperacao getTipo() {
@@ -29,7 +27,15 @@ public class Operacao {
         return dado;
     }
 
+    public void setDado(char dado) {
+        this.dado = dado;
+    }
+
     public int getValor() {
         return valor;
+    }
+    
+    public void setValor(int valor) {
+        this.valor = valor;
     }
 }
