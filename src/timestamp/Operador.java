@@ -28,17 +28,18 @@ public class Operador {
     public void executar() {
         Operacao operacao;
         operacao = this.transacaoAtiva.getOperacao();
-        char dado = operacao.getDado();
-//        int valor = operacao.getValor();
         long ts = transacaoAtiva.getTimeStamp();        
         
         switch (operacao.getTipo()) {
             case S :
                 break;
             case R :
+                char dado = operacao.getDado();
                 tabela.read(dado, ts);
                 break;
             case W :
+                char dado = operacao.getDado();
+                int valor = operacao.getValor();
                 tabela.write(dado, valor, ts);
                 break;
             case C :
