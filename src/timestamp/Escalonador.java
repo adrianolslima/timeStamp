@@ -27,8 +27,12 @@ class Escalonador {
         return transacaoAtiva;
     }
 
-    void escalonar(Transacao transacao) {
+    public void escalonar(Transacao transacao) {
         this.transacoes.add(transacao);
+    }
+    
+    public boolean isVazio() {
+        return transacoes.size() == 0;
     }
     
 }
