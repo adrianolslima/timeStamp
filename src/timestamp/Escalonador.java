@@ -5,14 +5,30 @@
  */
 package timestamp;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Adriano
  */
 class Escalonador {
+    
+    private ArrayList<Transacao> transacoes;
+    private int ponteiro;   //Indica qual transacao sera escalonada;
+
+    public Escalonador() {
+        this.transacoes = new ArrayList<>();
+        this.ponteiro = 0;
+    }
 
     public Transacao getTransacaoAtiva() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Transacao transacaoAtiva = this.transacoes.get(ponteiro);
+        this.ponteiro = ponteiro++ % transacoes.size(); //Evitar que o ponteiro ultrapasse o tamanho da lista
+        return transacaoAtiva;
+    }
+
+    void escalonar(Transacao transacao) {
+        this.transacoes.add(transacao);
     }
     
 }
