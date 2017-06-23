@@ -21,7 +21,9 @@ public class Transacao {
     
     private ArrayList<Operacao> operacoes;   //Fila de operacoes a serem executadas
 
-    public Transacao(long timeStamp) {
+    public Transacao(long id, long timeStamp) {
+        
+        this.id = id;
         
         //TimeStamp recebido na construcao da transacao
         this.timeStamp = timeStamp;
@@ -30,7 +32,13 @@ public class Transacao {
         
         //Inicia a fila de operacoes com START 
         this.operacoes = new ArrayList<>();
-        operacoes.add(new Operacao(TipoOperacao.S));
+        Operacao operacao = new Operacao();
+        operacao.setTipo(TipoOperacao.S);
+        operacoes.add(operacao);
+    }
+
+    public long getId() {
+        return id;
     }
     
     public long getTimeStamp() {
@@ -39,12 +47,20 @@ public class Transacao {
     
     public Operacao getOperacao() {
         Operacao proximaOperacao = this.operacoes.get(ponteiro);
-        ponteiro++;
+        ponteiro = (ponteiro + 1) % operacoes.size();
         return proximaOperacao;
     }
     
     public void addOperacao(Operacao operacao) {
         this.operacoes.add(operacao);
+    }
+
+    public int getPonteiro() {
+        return ponteiro;
+    }
+    
+    public int getTamanho() {
+        return operacoes.size();
     }
     
 }
