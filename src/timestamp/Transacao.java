@@ -44,6 +44,11 @@ public class Transacao {
     public long getTimeStamp() {
         return this.timeStamp;
     }
+
+    public void reiniciar(long timeStamp) {
+        this.timeStamp = timeStamp;
+        this.ponteiro = 0;
+    }
     
     public Operacao getOperacao() {
         Operacao proximaOperacao = this.operacoes.get(ponteiro);

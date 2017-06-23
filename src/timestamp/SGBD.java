@@ -5,6 +5,9 @@
  */
 package timestamp;
 
+import static java.lang.Thread.sleep;
+import telas.Tela;
+
 /**
  *
  * @author Adriano
@@ -14,22 +17,27 @@ public class SGBD {
     private Operador operador;
     private Escalonador escalonador;
     private Gerador gerador;
+    
+    private Tabela tabela;
 
     public SGBD() {
+        this.tabela = new Tabela();
+        
         this.escalonador = Escalonador.getInstance();
         this.gerador = new Gerador();
-        this.operador = new Operador();        
+        this.operador = new Operador(tabela);        
+        
     }
 
-    public void run() {
+    public void executar() throws InterruptedException {
         
         this.gerarTransacoesIniciais();
         
         operador.atualizar();
         
-        while(operador.isAtivo()) {
+//        while(operador.isAtivo()) 
             operador.executar();
-        }
+//        }
         
         System.out.println("fim!");
     }
@@ -37,7 +45,7 @@ public class SGBD {
     public void gerarTransacoesIniciais() {
         for (int i = 0; i < 3; i++) {
             Transacao transacao = this.gerador.gerarTransacao();
-            System.out.println("TS:" + transacao.getTimeStamp());
+            System.out.println("TS" + transacao.getId()+ ": " + transacao.getTimeStamp());
             this.escalonador.escalonar(transacao);
         }
     }

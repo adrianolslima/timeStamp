@@ -18,53 +18,61 @@ public class Tabela {
     private Dado dadoE;
 
     public Tabela() {
-        this.dadoA = new Dado();
-        this.dadoB = new Dado();
-        this.dadoC = new Dado();
-        this.dadoD = new Dado();
-        this.dadoE = new Dado();
+        this.dadoA = new Dado('A');
+        this.dadoB = new Dado('B');
+        this.dadoC = new Dado('C');
+        this.dadoD = new Dado('D');
+        this.dadoE = new Dado('E');
     }
 
-    public int read(char nomeDado, long TS) {
-        Dado dado;
+    public Dado defineDado(char nomeDado) {
         switch (nomeDado) {
             case 'A':
-                dado = dadoA;
-                break;
+                return dadoA;
             case 'B':
-                dado = dadoB;
-                break;
+                return dadoB;
             case 'C':
-                dado = dadoC;
-                break;
+                return dadoC;
             case 'D':
-                dado = dadoD;
-                break;
+                return dadoD;
             default:
-                dado = dadoE;
+                return dadoE;
         }
-        return dado.read(TS);
     }
 
-    public void write(char nomeDado, int valor, long TS) {
-        Dado dado;
-        switch (nomeDado) {
-            case 'A':
-                dado = dadoA;
-                break;
-            case 'B':
-                dado = dadoB;
-                break;
-            case 'C':
-                dado = dadoC;
-                break;
-            case 'D':
-                dado = dadoD;
-                break;
-            default:
-                dado = dadoE;
-        }
-        dado.write(valor, TS);
+    public int read(char nomeDado) {
+        Dado dado = this.defineDado(nomeDado);
+        return dado.read();
+    }
+
+    public void write(char nomeDado, int valor) {
+        Dado dado = this.defineDado(nomeDado);
+        dado.write(valor);
+    }
+
+    public long getTSread(char nomeDado) {
+        Dado dado = this.defineDado(nomeDado);
+        return dado.getTSread();
+    }
+
+    public long getTSwrite(char nomeDado) {
+        Dado dado = this.defineDado(nomeDado);
+        return dado.getTSwrite();
+    }
+    
+    public void setTSread(char nomeDado, long TSread) {
+        Dado dado = this.defineDado(nomeDado);
+        dado.setTSread(TSread);
+    }
+    
+    public void setTSwrite(char nomeDado, long TSwrite) {
+        Dado dado = this.defineDado(nomeDado);
+        dado.setTSwrite(TSwrite);
+    }
+    
+    public Dado[] getDados() {
+        Dado dados[] = {dadoA, dadoB, dadoC, dadoD, dadoE};
+        return dados;
     }
 
 }

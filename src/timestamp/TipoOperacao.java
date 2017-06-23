@@ -13,5 +13,6 @@ public enum TipoOperacao {
     S,  //Start
     R,  //Read
     W,  //Write
-    C;  //Commit    
+    C,  //Commit    
+    A;  //Abort
 }

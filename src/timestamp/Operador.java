@@ -5,6 +5,9 @@
  */
 package timestamp;
 
+import java.time.Instant;
+import telas.Tela;
+
 /**
  *
  * @author Adriano
@@ -16,11 +19,17 @@ public class Operador {
     private Tabela tabela;
     private Escalonador escalonador;
     private Log log;
+    
+    private Tela tela;
 
     private Transacao transacaoAtiva;
 
-    public Operador() {
-        this.tabela = new Tabela();
+    public Operador(Tabela tabela) {
+        this.tabela = tabela;
+        
+        this.tela = new Tela(tabela, this);
+        tela.setVisible(true);
+        
         this.escalonador = Escalonador.getInstance();
         this.log = new Log();
 
@@ -36,30 +45,68 @@ public class Operador {
     }
 
     public void executar() {
+        
+        tela.limparDados();
+        tela.apresentarDados();
+        
         Operacao operacao;
         operacao = this.transacaoAtiva.getOperacao();
 //        escalonador.getTransacaoAtiva();
         long ts = transacaoAtiva.getTimeStamp();
-        char dado;
+        char dado = operacao.getDado();
+        TipoOperacao tipo = operacao.getTipo();
+        String proxima;
+        
+        if (tipo == TipoOperacao.R) {
+            proxima = tipo+String.valueOf(transacaoAtiva.getId())+"("+dado+"); TS: "+ts;
+        } else if (tipo == TipoOperacao.W) {
+            proxima = tipo+String.valueOf(transacaoAtiva.getId())+"("+dado+", "+operacao.getValor()+"); TS: "+ts;            
+        } else {
+            proxima = tipo+String.valueOf(transacaoAtiva.getId());
+        }
+        
+        tela.atualizarProxima(proxima);
 
-        switch (operacao.getTipo()) {
+        switch (tipo) {
             case S:
                 log.addOperacao(transacaoAtiva, operacao);
                 break;
             case R:
-                dado = operacao.getDado();
-                tabela.read(dado, ts);
-                log.addOperacao(transacaoAtiva, operacao);
+                if (ts < tabela.getTSwrite(dado)) {
+                    escalonador.remover(transacaoAtiva);
+                    transacaoAtiva.reiniciar(this.gerarTimeStamp());
+                    escalonador.escalonar(transacaoAtiva);
+                    Operacao abort = new Operacao();
+                    abort.setTipo(TipoOperacao.A);
+                    log.addOperacao(transacaoAtiva, abort);
+                    this.atualizar();
+                } else {
+                    tabela.read(dado);
+                    if (ts > tabela.getTSread(dado)) {
+                        tabela.setTSread(dado, ts);
+                    }
+                    log.addOperacao(transacaoAtiva, operacao);
+                }
                 break;
             case W:
-                dado = operacao.getDado();
                 int valor = operacao.getValor();
-                tabela.write(dado, valor, ts);
-                log.addOperacao(transacaoAtiva, operacao);
-                this.atualizar();
+                if (ts < tabela.getTSread(dado) || ts < tabela.getTSwrite(dado)) {
+                    escalonador.remover(transacaoAtiva);
+                    transacaoAtiva.reiniciar(this.gerarTimeStamp());
+                    escalonador.escalonar(transacaoAtiva);
+                    Operacao abort = new Operacao();
+                    abort.setTipo(TipoOperacao.A);
+                    log.addOperacao(transacaoAtiva, abort);
+                    this.atualizar();
+                } else {
+                    tabela.write(dado, valor);
+                    tabela.setTSwrite(dado, ts);
+                    log.addOperacao(transacaoAtiva, operacao);
+                    this.atualizar();                    
+                }
                 break;
             case C:
-                escalonador.commit(transacaoAtiva);
+                escalonador.remover(transacaoAtiva);
                 log.addOperacao(transacaoAtiva, operacao);
                 if (escalonador.isVazio()) {
                     this.ativo = false;
@@ -69,6 +116,10 @@ public class Operador {
                 break;
         }
 
+    }
+    
+    public long gerarTimeStamp() {
+        return Instant.now().toEpochMilli() + 10;
     }
 
 }

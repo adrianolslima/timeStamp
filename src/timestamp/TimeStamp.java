@@ -17,7 +17,7 @@ public class TimeStamp {
     public static void main(String[] args) {
         
         SGBD sgbd = new SGBD();
-        sgbd.run();
+        sgbd.executar();
         
     }
     

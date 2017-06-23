@@ -31,14 +31,11 @@ public class Log {
         int valor = operacao.getValor();
         
         switch(tipo) {
-            case S:
-                System.out.println(saida);
-                break;
             case R:
-                System.out.println(saida + "(" + dado + ", " + valor + "); ");
+                System.out.println(saida + "(" + dado + ", " + valor + "); " + transacao.getTimeStamp());
                 break;
             case W:
-                System.out.println(saida + "(" + dado + ", " + valor + "); ");
+                System.out.println(saida + "(" + dado + ", " + valor + "); " + transacao.getTimeStamp());
                 break;
             default:
                 System.out.println(saida);

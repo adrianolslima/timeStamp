@@ -11,25 +11,50 @@ package timestamp;
  */
 public class Dado {
     
+    private char nome;
+    
     private long TSread;
     private long TSwrite;
     
     private int valor;
 
-    public Dado() {
+    public Dado(char nome) {
+        this.nome = nome;
         this.TSread = 0;
         this.TSwrite = 0;
         this.valor = 0;
     }
 
-    public int read(long TSread) {
+    public char getNome() {
+        return nome;
+    }
+
+    public long getTSread() {
+        return TSread;
+    }
+
+    public void setTSread(long TSread) {
         this.TSread = TSread;
+    }
+
+    public long getTSwrite() {
+        return TSwrite;
+    }
+
+    public void setTSwrite(long TSwrite) {
+        this.TSwrite = TSwrite;
+    }
+
+    public int read() {
         return valor;
     }
 
-    public void write(int valor, long TSwrite) {
-        this.TSwrite = TSwrite;
+    public void write(int valor) {
         this.valor = valor;
+    }
+
+    public int getValor() {
+        return valor;
     }
     
 }

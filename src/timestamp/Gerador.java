@@ -24,7 +24,7 @@ public class Gerador {
     public Transacao gerarTransacao() {
 
         //Gera a transacao com seu TimeStamp
-        long timeStamp = (Instant.now().toEpochMilli() + ponteiro) % 1000;
+        long timeStamp = (Instant.now().toEpochMilli() + ponteiro);
         Transacao transacao = new Transacao(ponteiro, timeStamp);
         ponteiro++;
 

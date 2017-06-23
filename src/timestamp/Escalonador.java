@@ -37,7 +37,7 @@ public class Escalonador {
         this.transacoes.add(transacao);
     }
     
-    public void commit(Transacao transacao) {
+    public void remover(Transacao transacao) {
         for (Transacao t : transacoes) {
             if (t.equals(transacao)) {
                 transacoes.remove(t);
