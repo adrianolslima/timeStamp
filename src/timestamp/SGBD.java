@@ -16,9 +16,30 @@ public class SGBD {
     private Gerador gerador;
 
     public SGBD() {
-        this.escalonador = new Escalonador();
+        this.escalonador = Escalonador.getInstance();
         this.gerador = new Gerador();
-        this.operador = new Operador(escalonador);
+        this.operador = new Operador();        
+    }
+
+    public void run() {
+        
+        this.gerarTransacoesIniciais();
+        
+        operador.atualizar();
+        
+        while(operador.isAtivo()) {
+            operador.executar();
+        }
+        
+        System.out.println("fim!");
+    }
+
+    public void gerarTransacoesIniciais() {
+        for (int i = 0; i < 3; i++) {
+            Transacao transacao = this.gerador.gerarTransacao();
+            System.out.println("TS:" + transacao.getTimeStamp());
+            this.escalonador.escalonar(transacao);
+        }
     }
     
     
