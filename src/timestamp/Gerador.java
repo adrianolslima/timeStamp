@@ -18,7 +18,7 @@ public class Gerador {
     private long ponteiro;  //Define o id da transacao
 
     public Gerador() {
-        this.ponteiro = 0;
+        this.ponteiro = 1;
     }
 
     public Transacao gerarTransacao() {
@@ -58,6 +58,9 @@ public class Gerador {
             }
             transacao.addOperacao(operacao);
         }
+        operacao = new Operacao();
+        operacao.setTipo(TipoOperacao.C);
+        transacao.addOperacao(operacao);
 
         return transacao;
     }
