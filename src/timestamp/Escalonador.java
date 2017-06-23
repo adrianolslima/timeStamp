@@ -11,14 +11,20 @@ import java.util.ArrayList;
  *
  * @author Adriano
  */
-class Escalonador {
+public class Escalonador {
+    
+    private static Escalonador escalonador = new Escalonador();
     
     private ArrayList<Transacao> transacoes;
     private int ponteiro;   //Indica qual transacao sera escalonada;
 
-    public Escalonador() {
+    private Escalonador() {
         this.transacoes = new ArrayList<>();
         this.ponteiro = 0;
+    }
+    
+    public static Escalonador getInstance() {
+        return escalonador;
     }
 
     public Transacao getTransacaoAtiva() {
