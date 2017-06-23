@@ -15,10 +15,13 @@ public class Operacao {
     private char dado;
     private int valor;
 
-    public Operacao(TipoOperacao tipo) {
-        this.tipo = tipo;
+    public Operacao() {
     }
 
+    public void setTipo(TipoOperacao tipo) {
+        this.tipo = tipo;
+    }
+    
     public TipoOperacao getTipo() {
         return tipo;
     }
