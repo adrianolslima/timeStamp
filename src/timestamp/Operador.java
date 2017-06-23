@@ -10,42 +10,65 @@ package timestamp;
  * @author Adriano
  */
 public class Operador {
-    
+
+    private boolean ativo;
+
     private Tabela tabela;
     private Escalonador escalonador;
-    
+    private Log log;
+
     private Transacao transacaoAtiva;
 
-    public Operador(Escalonador escalonador) {
+    public Operador() {
         this.tabela = new Tabela();
-        this.escalonador = escalonador;
+        this.escalonador = Escalonador.getInstance();
+        this.log = new Log();
+
+        this.ativo = true;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
     }
 
     public void atualizar() {
         this.transacaoAtiva = this.escalonador.getTransacaoAtiva();
     }
-    
+
     public void executar() {
         Operacao operacao;
         operacao = this.transacaoAtiva.getOperacao();
-        long ts = transacaoAtiva.getTimeStamp();        
-        
+//        escalonador.getTransacaoAtiva();
+        long ts = transacaoAtiva.getTimeStamp();
+        char dado;
+
         switch (operacao.getTipo()) {
-            case S :
+            case S:
+                log.addOperacao(transacaoAtiva, operacao);
                 break;
-            case R :
-                char dado = operacao.getDado();
+            case R:
+                dado = operacao.getDado();
                 tabela.read(dado, ts);
+                log.addOperacao(transacaoAtiva, operacao);
                 break;
-            case W :
-                char dado = operacao.getDado();
+            case W:
+                dado = operacao.getDado();
                 int valor = operacao.getValor();
                 tabela.write(dado, valor, ts);
+                log.addOperacao(transacaoAtiva, operacao);
+                this.atualizar();
                 break;
-            case C :
+            case C:
+                escalonador.commit(transacaoAtiva);
+                log.addOperacao(transacaoAtiva, operacao);
+                if (escalonador.isVazio()) {
+                    this.ativo = false;
+                } else {
+                    this.atualizar();
+                }
                 break;
-            
         }
+
     }
-    
+
 }
