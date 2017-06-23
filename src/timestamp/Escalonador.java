@@ -29,12 +29,24 @@ public class Escalonador {
 
     public Transacao getTransacaoAtiva() {
         Transacao transacaoAtiva = this.transacoes.get(ponteiro);
-        this.ponteiro = ponteiro++ % transacoes.size(); //Evitar que o ponteiro ultrapasse o tamanho da lista
+        this.ponteiro = (ponteiro + 1) % transacoes.size(); //Evitar que o ponteiro ultrapasse o tamanho da lista
         return transacaoAtiva;
     }
 
     public void escalonar(Transacao transacao) {
         this.transacoes.add(transacao);
+    }
+    
+    public void commit(Transacao transacao) {
+        for (Transacao t : transacoes) {
+            if (t.equals(transacao)) {
+                transacoes.remove(t);
+                if (ponteiro > 0) {
+                    ponteiro = ponteiro % transacoes.size();
+                }
+                break;
+            }
+        }
     }
     
     public boolean isVazio() {
