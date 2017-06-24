@@ -50,7 +50,13 @@ public class Dado {
     }
 
     public Transacao removeTransacaoWait() {
+        Transacao transacao = filaWait.get(0);
+        this.setTSwrite(transacao.getTimeStamp());
         return filaWait.remove(0);
+    }
+    
+    public boolean isFilaWaitVazia() {
+        return filaWait.isEmpty();
     }
 
     public void addTransacaoWait(Transacao transacao) {
