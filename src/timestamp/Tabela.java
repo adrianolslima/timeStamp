@@ -75,4 +75,25 @@ public class Tabela {
         return dados;
     }
 
+    public Transacao removeTransacaoWait(long timeStamp) {
+        Transacao transacao = null;
+        if (dadoA.getTSwrite() == timeStamp && !dadoA.isFilaWaitVazia()) {
+            transacao = dadoA.removeTransacaoWait();
+        } else if (dadoB.getTSwrite() == timeStamp && !dadoB.isFilaWaitVazia()) {
+            transacao = dadoB.removeTransacaoWait();
+        } else if (dadoC.getTSwrite() == timeStamp && !dadoC.isFilaWaitVazia()) {
+            transacao = dadoC.removeTransacaoWait();
+        } else if (dadoD.getTSwrite() == timeStamp && !dadoD.isFilaWaitVazia()) {
+            transacao = dadoD.removeTransacaoWait();
+        } else if (dadoE.getTSwrite() == timeStamp && !dadoE.isFilaWaitVazia()) {
+            transacao = dadoE.removeTransacaoWait();
+        }
+        return transacao;
+    }
+
+    public void addTransacaoWait(char nomeDado, Transacao transacao) {
+        Dado dado = this.defineDado(nomeDado);
+        dado.addTransacaoWait(transacao);
+    }
+
 }
