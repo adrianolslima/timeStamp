@@ -13,17 +13,15 @@ import telas.Tela;
  * @author Adriano
  */
 public class Operador {
-
-    private boolean ativo;
-
+    
     private Tabela tabela;
     private Escalonador escalonador;
     private Log log;
     
     private Tela tela;
-
+    
     private Transacao transacaoAtiva;
-
+    
     public Operador(Tabela tabela) {
         this.tabela = tabela;
         
@@ -32,18 +30,12 @@ public class Operador {
         
         this.escalonador = Escalonador.getInstance();
         this.log = new Log();
-
-        this.ativo = true;
     }
-
-    public boolean isAtivo() {
-        return ativo;
-    }
-
+    
     public void atualizar() {
         this.transacaoAtiva = this.escalonador.getTransacaoAtiva();
     }
-
+    
     public void executar() {
         
         tela.limparDados();
@@ -51,75 +43,95 @@ public class Operador {
         
         Operacao operacao;
         operacao = this.transacaoAtiva.getOperacao();
-//        escalonador.getTransacaoAtiva();
+        
         long ts = transacaoAtiva.getTimeStamp();
         char dado = operacao.getDado();
         TipoOperacao tipo = operacao.getTipo();
         String proxima;
         
         if (tipo == TipoOperacao.R) {
-            proxima = tipo+String.valueOf(transacaoAtiva.getId())+"("+dado+"); TS: "+ts;
+            proxima = tipo + String.valueOf(transacaoAtiva.getId()) + "(" + dado + "); TS: " + ts;
         } else if (tipo == TipoOperacao.W) {
-            proxima = tipo+String.valueOf(transacaoAtiva.getId())+"("+dado+", "+operacao.getValor()+"); TS: "+ts;            
+            proxima = tipo + String.valueOf(transacaoAtiva.getId()) + "(" + dado + ", " + operacao.getValor() + "); TS: " + ts;
         } else {
-            proxima = tipo+String.valueOf(transacaoAtiva.getId());
+            proxima = tipo + String.valueOf(transacaoAtiva.getId());
         }
         
         tela.atualizarProxima(proxima);
-
+        
         switch (tipo) {
             case S:
                 log.addOperacao(transacaoAtiva, operacao);
                 break;
             case R:
-                if (ts < tabela.getTSwrite(dado)) {
-                    escalonador.remover(transacaoAtiva);
-                    transacaoAtiva.reiniciar(this.gerarTimeStamp());
-                    escalonador.escalonar(transacaoAtiva);
-                    Operacao abort = new Operacao();
-                    abort.setTipo(TipoOperacao.A);
-                    log.addOperacao(transacaoAtiva, abort);
-                    this.atualizar();
-                } else {
+                if (ts <= tabela.getTSwrite(dado) || tabela.getTSwrite(dado) == 0) {
+//                    escalonador.remover(transacaoAtiva);
+//                    transacaoAtiva.reiniciar(this.gerarTimeStamp());
+//                    escalonador.escalonar(transacaoAtiva);
+//                    Operacao abort = new Operacao();
+//                    abort.setTipo(TipoOperacao.A);
+//                    log.addOperacao(transacaoAtiva, abort);
+//                    this.atualizar();
                     tabela.read(dado);
                     if (ts > tabela.getTSread(dado)) {
                         tabela.setTSread(dado, ts);
                     }
                     log.addOperacao(transacaoAtiva, operacao);
+                } else {
+//                    tabela.read(dado);
+//                    if (ts > tabela.getTSread(dado)) {
+//                        tabela.setTSread(dado, ts);
+//                    }
+//                    log.addOperacao(transacaoAtiva, operacao);
+                    escalonador.remover(transacaoAtiva);
+                    tabela.addTransacaoWait(dado, transacaoAtiva);
+                    this.atualizar();
                 }
                 break;
             case W:
                 int valor = operacao.getValor();
-                if (ts < tabela.getTSread(dado) || ts < tabela.getTSwrite(dado)) {
-                    escalonador.remover(transacaoAtiva);
-                    transacaoAtiva.reiniciar(this.gerarTimeStamp());
-                    escalonador.escalonar(transacaoAtiva);
-                    Operacao abort = new Operacao();
-                    abort.setTipo(TipoOperacao.A);
-                    log.addOperacao(transacaoAtiva, abort);
-                    this.atualizar();
-                } else {
+                if (ts <= tabela.getTSwrite(dado) || ts <= tabela.getTSread(dado) || tabela.getTSwrite(dado) == 0) {
+//                    escalonador.remover(transacaoAtiva);
+//                    transacaoAtiva.reiniciar(this.gerarTimeStamp());
+//                    escalonador.escalonar(transacaoAtiva);
+//                    Operacao abort = new Operacao();
+//                    abort.setTipo(TipoOperacao.A);
+//                    log.addOperacao(transacaoAtiva, abort);
+//                    this.atualizar();
                     tabela.write(dado, valor);
                     tabela.setTSwrite(dado, ts);
                     log.addOperacao(transacaoAtiva, operacao);
-                    this.atualizar();                    
+                    this.atualizar();
+                } else {
+//                    tabela.write(dado, valor);
+//                    tabela.setTSwrite(dado, ts);
+//                    log.addOperacao(transacaoAtiva, operacao);
+//                    this.atualizar();
+                    escalonador.remover(transacaoAtiva);
+                    tabela.addTransacaoWait(dado, transacaoAtiva);
+                    this.atualizar();
                 }
                 break;
             case C:
                 escalonador.remover(transacaoAtiva);
                 log.addOperacao(transacaoAtiva, operacao);
-                if (escalonador.isVazio()) {
-                    this.ativo = false;
-                } else {
+                Transacao transacaoWait = tabela.removeTransacaoWait(ts);
+                if (transacaoWait != null) {
+                    escalonador.escalonar(transacaoWait);
+                }
+                if (!escalonador.isVazio()) {
                     this.atualizar();
+                } else {
+                    System.out.println("fim!");
+                    tela.inativar();
                 }
                 break;
         }
-
+        
     }
     
     public long gerarTimeStamp() {
         return Instant.now().toEpochMilli() + 10;
     }
-
+    
 }
