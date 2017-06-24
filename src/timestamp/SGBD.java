@@ -19,6 +19,8 @@ public class SGBD {
     private Gerador gerador;
 
     private Tabela tabela;
+    
+    private Tela tela;
 
     public SGBD() {
         this.tabela = new Tabela();
@@ -29,13 +31,13 @@ public class SGBD {
 
     }
 
-    public void executar() throws InterruptedException {
+    public void executar() {
 
         this.gerarTransacoesIniciais();
 
         operador.atualizar();
-
         operador.executar();
+        
     }
 
     public void gerarTransacoesIniciais() {
