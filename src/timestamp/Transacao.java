@@ -50,16 +50,18 @@ public class Transacao {
         this.ponteiro = 0;
     }
     
-    public Operacao getOperacao() {
-        Operacao proximaOperacao = this.operacoes.get(ponteiro);
-        ponteiro = (ponteiro + 1) % operacoes.size();
-        return proximaOperacao;
-    }
-    
     public void addOperacao(Operacao operacao) {
         this.operacoes.add(operacao);
     }
 
+    public Operacao getOperacao() {
+        Operacao proximaOperacao = this.operacoes.get(ponteiro);
+        if (ponteiro <= operacoes.size()) {
+            ponteiro++;
+        }
+        return proximaOperacao;
+    }
+    
     public int getPonteiro() {
         return ponteiro;
     }
