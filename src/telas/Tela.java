@@ -13,6 +13,7 @@ import timestamp.Operador;
 import timestamp.SGBD;
 import timestamp.Tabela;
 import timestamp.TipoOperacao;
+import timestamp.Transacao;
 
 /**
  *
@@ -39,25 +40,34 @@ public class Tela extends javax.swing.JFrame {
     }
 
     public void atualizarTela() {
-        
+
         this.apresentarDados();
         this.popularLog();
     }
 
     public void apresentarDados() {
-        DefaultTableModel dtmCardapio = (DefaultTableModel) tbDados.getModel();
+        DefaultTableModel dtmDados = (DefaultTableModel) tbDados.getModel();
 
-        Object coluna[] = new Object[4];
+        Object coluna[] = new Object[5];
 
         for (int i = 0; i < dados.length; i++) {
+            
+            String transacoesWait = new String();
+            ArrayList<Transacao> filaWait = dados[i].getFilaWait();
+            
+            for (Transacao transacao : filaWait) {
+                transacoesWait = transacoesWait + "T" + transacao.getId();
+            }
+            
             coluna[0] = dados[i].getNome();
             coluna[1] = dados[i].getValor();
             coluna[2] = dados[i].getTSread();
             coluna[3] = dados[i].getTSwrite();
-            dtmCardapio.addRow(coluna);
+            coluna[4] = transacoesWait;
+            dtmDados.addRow(coluna);
         }
     }
-     
+
     public void popularLog() {
         ArrayList<Operacao> operacoes = sgbd.getLog();
         String log = new String();
@@ -77,11 +87,13 @@ public class Tela extends javax.swing.JFrame {
 
             log = log + i + ". ";
             log = log + tipo + idTransacao;
-            
+
             if (tipo == TipoOperacao.R) {
-                log = log + "(" + dado + ", " + valor + "); TS: " + ts + ";" + System.getProperty("line.separator");
+                log = log + "(" + dado + ", " + valor + "); TS: " + ts + ";"
+                        + System.getProperty("line.separator");
             } else if (tipo == TipoOperacao.W) {
-                log = log + "(" + dado + ", " + valor + "); TS: " + ts + ";" + System.getProperty("line.separator");
+                log = log + "(" + dado + ", " + valor + "); TS: " + ts + ";"
+                        + System.getProperty("line.separator");
             } else {
                 log = log + ";" + System.getProperty("line.separator");
             }
@@ -127,14 +139,14 @@ public class Tela extends javax.swing.JFrame {
 
         tbDados.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Dado", "Valor", "TS-Read", "TS-Write"
+                "Dado", "Valor", "TS-Read", "TS-Write", "Fila-WAIT"
             }
         ));
         jScrollPane1.setViewportView(tbDados);
@@ -163,31 +175,32 @@ public class Tela extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(130, 130, 130)
                         .addComponent(btProxima)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfProxima)))
-                .addContainerGap(210, Short.MAX_VALUE))
+                        .addComponent(tfProxima)
+                        .addGap(255, 255, 255)))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(21, 21, 21))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(36, 36, 36)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btProxima)
-                    .addComponent(tfProxima, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(39, 39, 39)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(208, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(36, 36, 36)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btProxima)
+                            .addComponent(tfProxima, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 444, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(65, Short.MAX_VALUE))
         );
 
         pack();
