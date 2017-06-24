@@ -20,26 +20,17 @@ public class Log {
     }
 
     public void addOperacao(Transacao transacao, Operacao operacao) {
-        this.operacoes.add(operacao);        
                 
-        String tid = String.valueOf(transacao.getId());
-        TipoOperacao tipo = operacao.getTipo();
+        long ts = transacao.getTimeStamp();
         
-        String saida = tipo + tid;
-        
-        char dado = operacao.getDado();
-        int valor = operacao.getValor();
-        
-        switch(tipo) {
-            case R:
-                System.out.println(saida + "(" + dado + ", " + valor + "); " + transacao.getTimeStamp());
-                break;
-            case W:
-                System.out.println(saida + "(" + dado + ", " + valor + "); " + transacao.getTimeStamp());
-                break;
-            default:
-                System.out.println(saida);
-        }
+        operacao.setIdTransacao(transacao.getId());
+        operacao.setTimeStamp(ts);
+                
+        this.operacoes.add(operacao);        
+    }
+
+    public ArrayList<Operacao> getLog() {
+        return operacoes;
     }
 
 }

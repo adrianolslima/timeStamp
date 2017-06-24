@@ -60,6 +60,7 @@ public class Gerador {
         }
         operacao = new Operacao();
         operacao.setTipo(TipoOperacao.C);
+        operacao.setIdTransacao(transacao.getId());
         transacao.addOperacao(operacao);
 
         return transacao;

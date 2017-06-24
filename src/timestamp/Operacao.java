@@ -14,6 +14,8 @@ public class Operacao {
     private TipoOperacao tipo;
     private char dado;
     private int valor;
+    private long idTransacao;
+    private long timeStamp;
 
     public Operacao() {
     }
@@ -40,5 +42,21 @@ public class Operacao {
     
     public void setValor(int valor) {
         this.valor = valor;
+    }
+
+    public long getIdTransacao() {
+        return idTransacao;
+    }
+
+    public void setIdTransacao(long idTransacao) {
+        this.idTransacao = idTransacao;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
     }
 }

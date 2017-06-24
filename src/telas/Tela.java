@@ -5,43 +5,50 @@
  */
 package telas;
 
+import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 import timestamp.Dado;
+import timestamp.Operacao;
 import timestamp.Operador;
+import timestamp.SGBD;
 import timestamp.Tabela;
+import timestamp.TipoOperacao;
 
 /**
  *
  * @author Adriano
  */
 public class Tela extends javax.swing.JFrame {
-    
+
+    private SGBD sgbd;
     private Operador operador;
-    
+
     private Tabela tabela;
     private Dado[] dados;
-    private boolean continuar;
 
     /**
      * Creates new form Tela
      */
-    public Tela(Tabela tabela, Operador operador) {
+    public Tela(SGBD sgbd, Tabela tabela, Operador operador) {
+        this.sgbd = sgbd;
         this.operador = operador;
-        this.continuar = false;
         this.tabela = tabela;
         this.dados = tabela.getDados();
-                
+
         initComponents();
+    }
+
+    public void atualizarTela() {
         
         this.apresentarDados();
+        this.popularLog();
     }
-    
+
     public void apresentarDados() {
-        
         DefaultTableModel dtmCardapio = (DefaultTableModel) tbDados.getModel();
-        
+
         Object coluna[] = new Object[4];
-        
+
         for (int i = 0; i < dados.length; i++) {
             coluna[0] = dados[i].getNome();
             coluna[1] = dados[i].getValor();
@@ -49,22 +56,53 @@ public class Tela extends javax.swing.JFrame {
             coluna[3] = dados[i].getTSwrite();
             dtmCardapio.addRow(coluna);
         }
-        
-    }                                       
+    }
+     
+    public void popularLog() {
+        ArrayList<Operacao> operacoes = sgbd.getLog();
+        String log = new String();
+        TipoOperacao tipo;
+        long idTransacao;
+        char dado;
+        int valor;
+        long ts;
+        int i = 1;
+
+        for (Operacao operacao : operacoes) {
+            tipo = operacao.getTipo();
+            idTransacao = operacao.getIdTransacao();
+            dado = operacao.getDado();
+            valor = operacao.getValor();
+            ts = operacao.getTimeStamp();
+
+            log = log + i + ". ";
+            log = log + tipo + idTransacao;
+            
+            if (tipo == TipoOperacao.R) {
+                log = log + "(" + dado + ", " + valor + "); TS: " + ts + ";" + System.getProperty("line.separator");
+            } else if (tipo == TipoOperacao.W) {
+                log = log + "(" + dado + ", " + valor + "); TS: " + ts + ";" + System.getProperty("line.separator");
+            } else {
+                log = log + ";" + System.getProperty("line.separator");
+            }
+            i++;
+        }
+        taLog.setText(log);
+
+    }
 
     public void limparDados() {
-        DefaultTableModel dtmPedido = (DefaultTableModel) tbDados.getModel();        
+        DefaultTableModel dtmPedido = (DefaultTableModel) tbDados.getModel();
         for (int i = tbDados.getRowCount() - 1; i >= 0; i--) {
             dtmPedido.removeRow(i);
         }
     }
-    
+
     public void atualizarProxima(String proxima) {
-        continuar = false;
         tfProxima.setText(proxima);
 //        while(!continuar){}
     }
-    
+
     public void inativar() {
         btProxima.setEnabled(false);
     }
@@ -81,7 +119,7 @@ public class Tela extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tbDados = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        taLog = new javax.swing.JTextArea();
         btProxima = new javax.swing.JButton();
         tfProxima = new javax.swing.JTextField();
 
@@ -101,9 +139,10 @@ public class Tela extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tbDados);
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane2.setViewportView(jTextArea1);
+        taLog.setEditable(false);
+        taLog.setColumns(20);
+        taLog.setRows(5);
+        jScrollPane2.setViewportView(taLog);
 
         btProxima.setText("Próxima");
         btProxima.addActionListener(new java.awt.event.ActionListener() {
@@ -112,6 +151,7 @@ public class Tela extends javax.swing.JFrame {
             }
         });
 
+        tfProxima.setEditable(false);
         tfProxima.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 tfProximaActionPerformed(evt);
@@ -200,7 +240,7 @@ public class Tela extends javax.swing.JFrame {
     private javax.swing.JButton btProxima;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextArea taLog;
     private javax.swing.JTable tbDados;
     private javax.swing.JTextField tfProxima;
     // End of variables declaration//GEN-END:variables

@@ -5,7 +5,7 @@
  */
 package timestamp;
 
-import static java.lang.Thread.sleep;
+import java.util.ArrayList;
 import telas.Tela;
 
 /**
@@ -17,6 +17,7 @@ public class SGBD {
     private Operador operador;
     private Escalonador escalonador;
     private Gerador gerador;
+    private Log log;
 
     private Tabela tabela;
     
@@ -27,7 +28,8 @@ public class SGBD {
 
         this.escalonador = Escalonador.getInstance();
         this.gerador = new Gerador();
-        this.operador = new Operador(tabela);
+        this.operador = new Operador(this, tabela);
+        this.log = new Log();
 
     }
 
@@ -46,6 +48,14 @@ public class SGBD {
             System.out.println("TS" + transacao.getId() + ": " + transacao.getTimeStamp());
             this.escalonador.escalonar(transacao);
         }
+    }
+
+    public ArrayList<Operacao> getLog() {
+        return log.getLog();
+    }
+
+    public void addOperacaoLog(Transacao transacaoAtiva, Operacao operacao) {
+        log.addOperacao(transacaoAtiva, operacao);
     }
 
 }

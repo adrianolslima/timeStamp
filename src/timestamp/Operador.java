@@ -14,22 +14,23 @@ import telas.Tela;
  */
 public class Operador {
     
+    private SGBD sgbd;
     private Tabela tabela;
     private Escalonador escalonador;
-    private Log log;
     
     private Tela tela;
     
     private Transacao transacaoAtiva;
     
-    public Operador(Tabela tabela) {
+    public Operador(SGBD sgbd, Tabela tabela) {
+        this.sgbd = sgbd;
+        
         this.tabela = tabela;
         
-        this.tela = new Tela(tabela, this);
+        this.tela = new Tela(sgbd, tabela, this);
         tela.setVisible(true);
         
         this.escalonador = Escalonador.getInstance();
-        this.log = new Log();
     }
     
     public void atualizar() {
@@ -37,10 +38,7 @@ public class Operador {
     }
     
     public void executar() {
-        
-        tela.limparDados();
-        tela.apresentarDados();
-        
+                
         Operacao operacao;
         operacao = this.transacaoAtiva.getOperacao();
         
@@ -61,7 +59,8 @@ public class Operador {
         
         switch (tipo) {
             case S:
-                log.addOperacao(transacaoAtiva, operacao);
+                sgbd.addOperacaoLog(transacaoAtiva, operacao);
+//                log.addOperacao(transacaoAtiva, operacao);
                 break;
             case R:
                 if (ts <= tabela.getTSwrite(dado) || tabela.getTSwrite(dado) == 0) {
@@ -76,7 +75,8 @@ public class Operador {
                     if (ts > tabela.getTSread(dado)) {
                         tabela.setTSread(dado, ts);
                     }
-                    log.addOperacao(transacaoAtiva, operacao);
+                    sgbd.addOperacaoLog(transacaoAtiva, operacao);
+//                    log.addOperacao(transacaoAtiva, operacao);
                 } else {
 //                    tabela.read(dado);
 //                    if (ts > tabela.getTSread(dado)) {
@@ -100,7 +100,8 @@ public class Operador {
 //                    this.atualizar();
                     tabela.write(dado, valor);
                     tabela.setTSwrite(dado, ts);
-                    log.addOperacao(transacaoAtiva, operacao);
+                    sgbd.addOperacaoLog(transacaoAtiva, operacao);
+//                    log.addOperacao(transacaoAtiva, operacao);
                     this.atualizar();
                 } else {
 //                    tabela.write(dado, valor);
@@ -114,7 +115,8 @@ public class Operador {
                 break;
             case C:
                 escalonador.remover(transacaoAtiva);
-                log.addOperacao(transacaoAtiva, operacao);
+                sgbd.addOperacaoLog(transacaoAtiva, operacao);
+//                log.addOperacao(transacaoAtiva, operacao);
                 Transacao transacaoWait = tabela.removeTransacaoWait(ts);
                 if (transacaoWait != null) {
                     escalonador.escalonar(transacaoWait);
@@ -127,6 +129,9 @@ public class Operador {
                 }
                 break;
         }
+        
+        tela.limparDados();
+        tela.atualizarTela();
         
     }
     
