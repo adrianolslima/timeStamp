@@ -5,6 +5,8 @@
  */
 package timestamp;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Adriano
@@ -15,6 +17,7 @@ public class Dado {
     
     private long TSread;
     private long TSwrite;
+    private ArrayList<Transacao> filaWait;
     
     private int valor;
 
@@ -22,6 +25,7 @@ public class Dado {
         this.nome = nome;
         this.TSread = 0;
         this.TSwrite = 0;
+        this.filaWait = new ArrayList<>();
         this.valor = 0;
     }
 
@@ -43,6 +47,14 @@ public class Dado {
 
     public void setTSwrite(long TSwrite) {
         this.TSwrite = TSwrite;
+    }
+
+    public Transacao removeTransacaoWait() {
+        return filaWait.remove(0);
+    }
+
+    public void addTransacaoWait(Transacao transacao) {
+        this.filaWait.add(transacao);
     }
 
     public int read() {
