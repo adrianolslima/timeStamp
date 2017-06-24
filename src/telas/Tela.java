@@ -64,6 +64,10 @@ public class Tela extends javax.swing.JFrame {
         tfProxima.setText(proxima);
 //        while(!continuar){}
     }
+    
+    public void inativar() {
+        btProxima.setEnabled(false);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -200,4 +204,5 @@ public class Tela extends javax.swing.JFrame {
     private javax.swing.JTable tbDados;
     private javax.swing.JTextField tfProxima;
     // End of variables declaration//GEN-END:variables
+
 }
