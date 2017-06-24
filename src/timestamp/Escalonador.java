@@ -6,6 +6,7 @@
 package timestamp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
@@ -50,7 +51,7 @@ public class Escalonador {
     }
     
     public boolean isVazio() {
-        return transacoes.size() == 0;
+        return transacoes.isEmpty();
     }
     
 }
