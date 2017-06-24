@@ -49,6 +49,10 @@ public class Dado {
         this.TSwrite = TSwrite;
     }
 
+    public ArrayList<Transacao> getFilaWait() {
+        return filaWait;
+    }
+
     public Transacao removeTransacaoWait() {
         Transacao transacao = filaWait.get(0);
         this.setTSwrite(transacao.getTimeStamp());
