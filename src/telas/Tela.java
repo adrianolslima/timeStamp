@@ -26,6 +26,7 @@ public class Tela extends javax.swing.JFrame {
 
     private Tabela tabela;
     private Dado[] dados;
+    private ArrayList<Transacao> escalonamento;
 
     /**
      * Creates new form Tela
@@ -35,6 +36,7 @@ public class Tela extends javax.swing.JFrame {
         this.operador = operador;
         this.tabela = tabela;
         this.dados = tabela.getDados();
+        this.escalonamento = sgbd.getEscalonamento();
 
         initComponents();
     }
@@ -43,6 +45,7 @@ public class Tela extends javax.swing.JFrame {
 
         this.apresentarDados();
         this.popularLog();
+//        this.apresentarTransacoes();
     }
 
     public void apresentarDados() {
@@ -65,6 +68,28 @@ public class Tela extends javax.swing.JFrame {
             coluna[3] = dados[i].getTSwrite();
             coluna[4] = transacoesWait;
             dtmDados.addRow(coluna);
+        }
+    }
+    public void apresentarTransacoes() {
+        DefaultTableModel dtmTransacoes = (DefaultTableModel) tbTransacoes.getModel();
+
+        Object coluna[] = new Object[8];
+
+        for (Transacao transacao : escalonamento) {
+            
+            ArrayList<Operacao> operacoes = transacao.getOperacoes();
+            
+            coluna[0] = "T" + transacao.getId();
+            
+            for (int i = 0; i < operacoes.size(); i++) {
+                TipoOperacao tipo = operacoes.get(i).getTipo();
+                char dado = operacoes.get(i).getDado();
+                int valor = operacoes.get(i).getValor();
+                
+                coluna[i + 1] = tipo + "(" + dado + ", " + valor + ")";
+                
+            }
+            dtmTransacoes.addRow(coluna);
         }
     }
 
@@ -104,15 +129,18 @@ public class Tela extends javax.swing.JFrame {
     }
 
     public void limparDados() {
-        DefaultTableModel dtmPedido = (DefaultTableModel) tbDados.getModel();
+        DefaultTableModel dtmDados = (DefaultTableModel) tbDados.getModel();
         for (int i = tbDados.getRowCount() - 1; i >= 0; i--) {
-            dtmPedido.removeRow(i);
+            dtmDados.removeRow(i);
         }
+//        DefaultTableModel dtmTransacoes = (DefaultTableModel) tbTransacoes.getModel();
+//        for (int i = tbTransacoes.getRowCount() - 1; i >= 0; i--) {
+//            dtmTransacoes.removeRow(i);
+//        }
     }
 
     public void atualizarProxima(String proxima) {
         tfProxima.setText(proxima);
-//        while(!continuar){}
     }
 
     public void inativar() {
@@ -134,8 +162,12 @@ public class Tela extends javax.swing.JFrame {
         taLog = new javax.swing.JTextArea();
         btProxima = new javax.swing.JButton();
         tfProxima = new javax.swing.JTextField();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tbTransacoes = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("TS-Estrito");
+        setResizable(false);
 
         tbDados.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -148,7 +180,15 @@ public class Tela extends javax.swing.JFrame {
             new String [] {
                 "Dado", "Valor", "TS-Read", "TS-Write", "Fila-WAIT"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(tbDados);
 
         taLog.setEditable(false);
@@ -170,6 +210,16 @@ public class Tela extends javax.swing.JFrame {
             }
         });
 
+        tbTransacoes.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ID", "", "", "", "", "", "", ""
+            }
+        ));
+        jScrollPane3.setViewportView(tbTransacoes);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -177,14 +227,14 @@ public class Tela extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(130, 130, 130)
                         .addComponent(btProxima)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfProxima)
-                        .addGap(255, 255, 255)))
+                        .addComponent(tfProxima, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 116, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(21, 21, 21))
         );
@@ -192,15 +242,17 @@ public class Tela extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(36, 36, 36)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btProxima)
-                            .addComponent(tfProxima, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(tfProxima, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 444, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(65, Short.MAX_VALUE))
+                .addContainerGap(171, Short.MAX_VALUE))
         );
 
         pack();
@@ -253,8 +305,10 @@ public class Tela extends javax.swing.JFrame {
     private javax.swing.JButton btProxima;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTextArea taLog;
     private javax.swing.JTable tbDados;
+    private javax.swing.JTable tbTransacoes;
     private javax.swing.JTextField tfProxima;
     // End of variables declaration//GEN-END:variables
 

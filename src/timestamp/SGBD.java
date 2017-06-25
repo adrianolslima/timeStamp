@@ -18,32 +18,28 @@ public class SGBD {
     private Escalonador escalonador;
     private Gerador gerador;
     private Log log;
-
-    private Tabela tabela;
     
     private Tela tela;
 
     public SGBD() {
-        this.tabela = new Tabela();
 
         this.escalonador = Escalonador.getInstance();
         this.gerador = new Gerador();
-        this.operador = new Operador(this, tabela);
+        this.operador = new Operador(this);
         this.log = new Log();
 
     }
 
     public void executar() {
-
         this.gerarTransacoesIniciais();
-
+        operador.iniciar();
         operador.atualizar();
         operador.executar();
         
     }
 
     public void gerarTransacoesIniciais() {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 10; i++) {
             Transacao transacao = this.gerador.gerarTransacao();
             System.out.println("TS" + transacao.getId() + ": " + transacao.getTimeStamp());
             this.escalonador.escalonar(transacao);
@@ -56,6 +52,10 @@ public class SGBD {
 
     public void addOperacaoLog(Transacao transacaoAtiva, Operacao operacao) {
         log.addOperacao(transacaoAtiva, operacao);
+    }
+
+    public ArrayList<Transacao> getEscalonamento() {
+        return escalonador.getTransacoes();
     }
 
 }

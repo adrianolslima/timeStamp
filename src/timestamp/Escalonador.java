@@ -42,8 +42,8 @@ public class Escalonador {
         for (Transacao t : transacoes) {
             if (t.equals(transacao)) {
                 transacoes.remove(t);
-                if (ponteiro > 0) {
-                    ponteiro = ponteiro % transacoes.size();
+                if (ponteiro == transacoes.size()) {
+                    ponteiro = 0;
                 }
                 break;
             }
@@ -52,6 +52,10 @@ public class Escalonador {
     
     public boolean isVazio() {
         return transacoes.isEmpty();
+    }
+
+    public ArrayList<Transacao> getTransacoes() {
+        return transacoes;
     }
     
 }
