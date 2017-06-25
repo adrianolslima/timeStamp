@@ -56,7 +56,7 @@ public class Tela extends javax.swing.JFrame {
             ArrayList<Transacao> filaWait = dados[i].getFilaWait();
             
             for (Transacao transacao : filaWait) {
-                transacoesWait = transacoesWait + "T" + transacao.getId();
+                transacoesWait = transacoesWait + "T" + transacao.getId() + "  ";
             }
             
             coluna[0] = dados[i].getNome();
