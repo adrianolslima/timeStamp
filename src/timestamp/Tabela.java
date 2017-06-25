@@ -5,6 +5,8 @@
  */
 package timestamp;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Adriano
@@ -59,36 +61,40 @@ public class Tabela {
         Dado dado = this.defineDado(nomeDado);
         return dado.getTSwrite();
     }
-    
+
     public void setTSread(char nomeDado, long TSread) {
         Dado dado = this.defineDado(nomeDado);
         dado.setTSread(TSread);
     }
-    
+
     public void setTSwrite(char nomeDado, long TSwrite) {
         Dado dado = this.defineDado(nomeDado);
         dado.setTSwrite(TSwrite);
     }
-    
+
     public Dado[] getDados() {
         Dado dados[] = {dadoA, dadoB, dadoC, dadoD, dadoE};
         return dados;
     }
 
-    public Transacao removeTransacaoWait(long timeStamp) {
-        Transacao transacao = null;
+    public ArrayList<Transacao> removeTransacaoWait(long timeStamp) {
+        ArrayList<Transacao> transacoes = new ArrayList<>();
         if (dadoA.getTSwrite() == timeStamp && !dadoA.isFilaWaitVazia()) {
-            transacao = dadoA.removeTransacaoWait();
-        } else if (dadoB.getTSwrite() == timeStamp && !dadoB.isFilaWaitVazia()) {
-            transacao = dadoB.removeTransacaoWait();
-        } else if (dadoC.getTSwrite() == timeStamp && !dadoC.isFilaWaitVazia()) {
-            transacao = dadoC.removeTransacaoWait();
-        } else if (dadoD.getTSwrite() == timeStamp && !dadoD.isFilaWaitVazia()) {
-            transacao = dadoD.removeTransacaoWait();
-        } else if (dadoE.getTSwrite() == timeStamp && !dadoE.isFilaWaitVazia()) {
-            transacao = dadoE.removeTransacaoWait();
+            transacoes.add(dadoA.removeTransacaoWait());
         }
-        return transacao;
+        if (dadoB.getTSwrite() == timeStamp && !dadoB.isFilaWaitVazia()) {
+            transacoes.add(dadoB.removeTransacaoWait());
+        }
+        if (dadoC.getTSwrite() == timeStamp && !dadoC.isFilaWaitVazia()) {
+            transacoes.add(dadoC.removeTransacaoWait());
+        }
+        if (dadoD.getTSwrite() == timeStamp && !dadoD.isFilaWaitVazia()) {
+            transacoes.add(dadoD.removeTransacaoWait());
+        }
+        if (dadoE.getTSwrite() == timeStamp && !dadoE.isFilaWaitVazia()) {
+            transacoes.add(dadoE.removeTransacaoWait());
+        }
+        return transacoes;
     }
 
     public void addTransacaoWait(char nomeDado, Transacao transacao) {
